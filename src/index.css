@@ -53,7 +53,8 @@ header h1 {
   -webkit-text-fill-color: transparent;
 }
 
-#quiz {
+main {
+  position: relative;
   max-width: 50rem;
   margin: auto;
   padding: 2rem;
@@ -63,7 +64,7 @@ header h1 {
   text-align: center;
 }
 
-#quiz > h3 {
+main > h3 {
     letter-spacing: 2px;
 }
 
@@ -75,30 +76,63 @@ header h1 {
     row-gap: 5px;
 }
 
-#answers > button {
+.answer-button {
     width: 90%;
     height: 40px;
     cursor: pointer;
-    background: linear-gradient(90deg, rgba(76,83,85,1) 0%, rgba(152,154,157,1) 50%, rgba(129,133,133,1) 100%);
     border: 0;
     outline: 0;
-    transition: 0.25s all ease-in-out;
-}
-
-#answers > button:hover {
-    background: linear-gradient(90deg, rgba(129,133,133,1) 0%, rgba(152,154,157,1) 50%, rgba(76,83,85,1) 100%);
 }
 
 .button-box-shadow {
     -webkit-box-shadow: 0px -1px 10px 0px rgba(26, 24, 24, 1);
--moz-box-shadow: 0px -1px 10px 0px rgba(26, 24, 24, 1);
-box-shadow: 0px -1px 10px 0px rgba(26, 24, 24, 1);
+    -moz-box-shadow: 0px -1px 10px 0px rgba(26, 24, 24, 1);
+    box-shadow: 0px -1px 10px 0px rgba(26, 24, 24, 1);
 }
 
-#playerAnswers {
+#player-answers {
     padding-top: 20px;
 }
 
-.playerAnswer {
+.player-answer {
     text-align: left;
+}
+
+.main-button {
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 0.3rem;
+    padding: 0.8rem 2rem 0.8rem 2rem;
+}
+
+#main-menu {
+    display: flex;
+    row-gap: 1rem;
+    flex-direction: column;
+}
+
+.restart-button {
+    background-color: rgba(0,0,0,0);
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+    border: 0;
+}
+
+.restart-button > span {
+    font-size: 2rem;
+}
+
+.background-gradient {
+    background: linear-gradient(90deg, rgba(76,83,85,1) 0%, rgba(152,154,157,1) 50%, rgba(129,133,133,1) 100%);
+}
+
+.background-gradient:hover {
+    background: linear-gradient(90deg, rgba(129,133,133,1) 0%, rgba(152,154,157,1) 50%, rgba(76,83,85,1) 100%);
 }
