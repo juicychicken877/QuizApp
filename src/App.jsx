@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import Header from "./components/Header.jsx";
 import ProgressBar from './components/ProgressBar.jsx';
 import { QUESTION_ARRAY } from "./data.js";
+import geraltThumbsUp from './assets/GeraltThumbsUp.png'
 
 /* Time in miliseconds */
-const QUESTION_TIME = 10000;
+const QUESTION_TIME = 20000;
 
 const getRandomObject = (array) => {
     let newArray = array;
@@ -38,7 +39,9 @@ export default function App() {
     const [gameStarted, setGameStarted] = useState(false);
     const [playerScore, setPlayerScore] = useState(
         {
-            scoreCount: 0,
+            correctScore: 0,
+            incorrectScore: 0,
+            skippedScore: 0,
             answers: []
         }
     );
@@ -48,11 +51,12 @@ export default function App() {
     }, [avaliableQuestions]);
 
     const checkAnswer = (answer) => {
-        let addition = answer === currentQuestion.correctAnswer && 1;
-            
         setPlayerScore(prevPlayerScore => {
             return {
-                scoreCount: prevPlayerScore.scoreCount + addition,
+                correctScore: (answer == currentQuestion.correctAnswer) ? prevPlayerScore.correctScore+1 : prevPlayerScore.correctScore,
+                incorrectScore: (answer != currentQuestion.correctAnswer && answer != 'SKIPPED') ? prevPlayerScore.incorrectScore+1 : prevPlayerScore.incorrectScore,
+                skippedScore: (answer == 'SKIPPED') ? prevPlayerScore.skippedScore+1 : prevPlayerScore.skippedScore,
+
                 answers: [
                     ...prevPlayerScore.answers,
                     {
@@ -75,13 +79,15 @@ export default function App() {
         setGameStarted(false);
         setAvaliableQuestions(QUESTION_ARRAY);
         setPlayerScore({
-            scoreCount: 0,
+            correctScore: 0,
+            incorrectScore: 0,
+            skippedScore: 0,
             answers: []
         })
     }
 
     return <>
-        <Header></Header>
+        <Header />
         <main>
             {gameStarted ? <> 
                 {/* Quiz */}
@@ -89,13 +95,14 @@ export default function App() {
                         <ProgressBar 
                             TIME={QUESTION_TIME} 
                             currentQuestion={currentQuestion}
+                            checkAnswer={checkAnswer}
                         />
 
                         <button
-                            className='restart-button background-gradient button-box-shadow'
+                            className='restart-button button-box-shadow gray-button-style'
                             onClick={() => restartGame()}
                         >
-                            <span class="material-symbols-outlined">restart_alt</span>
+                            <span className="material-symbols-outlined">restart_alt</span>
                         </button>
 
                         <h3>{ currentQuestion.question }</h3>
@@ -103,7 +110,7 @@ export default function App() {
                         <section id="answers">
                             {randomizeArray(currentQuestion.answers).map(item => {
                                 return <button 
-                                    className='button-box-shadow answer-button background-gradient' 
+                                    className='button-box-shadow answer-button gray-button-style' 
                                     onClick={() => checkAnswer(item)}
                                     key={item}
                                 >
@@ -115,21 +122,41 @@ export default function App() {
                 }
                 {/* End game - display score*/}
                 {avaliableQuestions.length === 0 && <>
-                    <h3>Your score: { playerScore.scoreCount } / {QUESTION_ARRAY.length}</h3>
-
                     <button
-                            className='restart-button background-gradient button-box-shadow'
+                            className='restart-button button-box-shadow gray-button-style'
                             onClick={() => restartGame()}
                         >
-                            <span class="material-symbols-outlined">restart_alt</span>
+                            <span className="material-symbols-outlined">restart_alt</span>
                     </button>
+
+                    <h3 className='end-quiz-header'>Quiz completed!</h3>
+                    
+                    <img src={geraltThumbsUp}></img>
+                    
+                    <section id='stats'>
+                        <div>
+                            <p>{Math.round((playerScore.skippedScore / QUESTION_ARRAY.length) * 100)}%</p>
+                            <p>Skipped</p>
+                        </div>
+                        <div>
+                            <p>{Math.round((playerScore.incorrectScore / QUESTION_ARRAY.length) * 100)}%</p>
+                            <p>Incorrect</p>
+                        </div>
+                        <div>
+                            <p>{Math.round((playerScore.correctScore / QUESTION_ARRAY.length) * 100)}%</p>   
+                            <p>Correct</p>
+                        </div>
+                    </section>
+
+                    <hr />
                     
                     <section id='player-answers'>
                         {playerScore.answers.map(item => {
                             return <div key={item.question} className='player-answer'>
                                 <h4>{item.question}</h4>
-                                <span>Your answer: {item.answer}</span> <br />
-                                <span>Correct answer: {item.correctAnswer}</span>
+                                <span
+                                    className={item.answer === item.correctAnswer ? 'correct-answer-color' : 'incorrect-answer-color'}
+                                >{item.answer}</span>
                             </div>
                         })}
                     </section>
@@ -139,13 +166,10 @@ export default function App() {
             </>
             :
             <section id='main-menu'>
-            <button 
-                className='main-button button-box-shadow background-gradient'
-                onClick={() => startQuiz()}
-            >Start quiz</button>
-            <button
-                className='main-button button-box-shadow background-gradient'
-            >Change Language</button>
+                <button 
+                    className='main-button button-box-shadow gray-button-style'
+                    onClick={() => startQuiz()}
+                >Start quiz</button>
             </section>
             }
         </main>

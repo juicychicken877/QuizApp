@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export default function ProgressBar({ TIME, currentQuestion }) {
+export default function ProgressBar({ TIME, currentQuestion, checkAnswer }) {
     const [remainingTime, setRemainingTime] = useState(TIME);
 
     useEffect(() => {
@@ -13,6 +13,14 @@ export default function ProgressBar({ TIME, currentQuestion }) {
             setRemainingTime(TIME);
         }
     }, [currentQuestion])
+
+    useEffect(() => {
+        if (remainingTime <= 0) {
+            checkAnswer('SKIPPED');
+
+            setRemainingTime(TIME);
+        }
+    }, [remainingTime])
 
     let progress = remainingTime / TIME;
 
