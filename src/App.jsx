@@ -1,37 +1,14 @@
 import { useState, useEffect } from 'react';
-import Header from "./components/Header.jsx";
-import ProgressBar from './components/ProgressBar.jsx';
 import { QUESTION_ARRAY } from "./data.js";
-import geraltThumbsUp from './assets/GeraltThumbsUp.png'
+import { getRandomObject } from './support.js';
+
+import Quiz from './components/Quiz.jsx';
+import Outro from './components/Outro.jsx';
+import MainMenu from './components/MainMenu.jsx';
+import QuizContextProvider from './quizContext.jsx';
 
 /* Time in miliseconds */
 const QUESTION_TIME = 20000;
-
-const getRandomObject = (array) => {
-    let newArray = array;
-    let object = Math.round(Math.random() * (array.length-1));
-
-    return newArray[object];
-}
-
-const randomizeArray = (array) => {
-    let newArray = array;
-
-    let currentIndex = newArray.length;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-
-    // Pick a remaining element...
-    let randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [newArray[currentIndex], newArray[randomIndex]] = [newArray[randomIndex], newArray[currentIndex]];
-  }
-
-    return newArray;
-}
 
 export default function App() {
     const [avaliableQuestions, setAvaliableQuestions] = useState(QUESTION_ARRAY);
@@ -86,92 +63,26 @@ export default function App() {
         })
     }
 
-    return <>
-        <Header />
-        <main>
+    const quizContextProviderValue = {
+        restartGame: restartGame,
+        checkAnswer: checkAnswer,
+        time: QUESTION_TIME,
+        currentQuestion: currentQuestion,
+        playerScore: playerScore,
+        QUESTION_ARRAY: QUESTION_ARRAY,
+        startQuiz: startQuiz
+    }
+
+    return <main>
+        <QuizContextProvider value={quizContextProviderValue} >
             {gameStarted ? <> 
-                {/* Quiz */}
-                {avaliableQuestions.length !== 0 && <>
-                        <ProgressBar 
-                            TIME={QUESTION_TIME} 
-                            currentQuestion={currentQuestion}
-                            checkAnswer={checkAnswer}
-                        />
+                {avaliableQuestions.length !== 0 && <Quiz /> }
 
-                        <button
-                            className='restart-button button-box-shadow gray-button-style'
-                            onClick={() => restartGame()}
-                        >
-                            <span className="material-symbols-outlined">restart_alt</span>
-                        </button>
-
-                        <h3>{ currentQuestion.question }</h3>
-
-                        <section id="answers">
-                            {randomizeArray(currentQuestion.answers).map(item => {
-                                return <button 
-                                    className='button-box-shadow answer-button gray-button-style' 
-                                    onClick={() => checkAnswer(item)}
-                                    key={item}
-                                >
-                                    {item}
-                                </button>
-                            })}
-                        </section>
-                    </>
-                }
-                {/* End game - display score*/}
-                {avaliableQuestions.length === 0 && <>
-                    <button
-                            className='restart-button button-box-shadow gray-button-style'
-                            onClick={() => restartGame()}
-                        >
-                            <span className="material-symbols-outlined">restart_alt</span>
-                    </button>
-
-                    <h3 className='end-quiz-header'>Quiz completed!</h3>
-                    
-                    <img src={geraltThumbsUp}></img>
-                    
-                    <section id='stats'>
-                        <div>
-                            <p>{Math.round((playerScore.skippedScore / QUESTION_ARRAY.length) * 100)}%</p>
-                            <p>Skipped</p>
-                        </div>
-                        <div>
-                            <p>{Math.round((playerScore.incorrectScore / QUESTION_ARRAY.length) * 100)}%</p>
-                            <p>Incorrect</p>
-                        </div>
-                        <div>
-                            <p>{Math.round((playerScore.correctScore / QUESTION_ARRAY.length) * 100)}%</p>   
-                            <p>Correct</p>
-                        </div>
-                    </section>
-
-                    <hr />
-                    
-                    <section id='player-answers'>
-                        {playerScore.answers.map(item => {
-                            return <div key={item.question} className='player-answer'>
-                                <h4>{item.question}</h4>
-                                <span
-                                    className={item.answer === item.correctAnswer ? 'correct-answer-color' : 'incorrect-answer-color'}
-                                >{item.answer}</span>
-                            </div>
-                        })}
-                    </section>
-                </>
-
-                }
+                {avaliableQuestions.length === 0 && <Outro /> }
             </>
             :
-            <section id='main-menu'>
-                <button 
-                    className='main-button button-box-shadow gray-button-style'
-                    onClick={() => startQuiz()}
-                >Start quiz</button>
-            </section>
+            <MainMenu />
             }
-        </main>
-    </>
+        </QuizContextProvider>
+    </main>
 }
